@@ -21,7 +21,7 @@ public class Entity {
 	/** Height of the entity. */
 	protected int height;
 	/** Color of the entity. */
-	private Color color;
+	protected Color color;
 	/** Sprite type assigned to the entity. */
 	protected SpriteType spriteType;
 
@@ -55,6 +55,16 @@ public class Entity {
 	 */
 	public final Color getColor() {
 		return color;
+	}
+
+	/**
+	 * Setter for the color of the entity.
+	 *
+	 * @param color
+	 *            New color of the entity.
+	 */
+	public void setColor(final Color color) {
+		this.color = color;
 	}
 
 	/**

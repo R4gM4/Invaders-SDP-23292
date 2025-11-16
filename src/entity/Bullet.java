@@ -11,12 +11,24 @@ import engine.DrawManager.SpriteType;
  * 
  */
 public class Bullet extends Entity {
+    // === [ADD] Owner flag: 1 = P1, 2 = P2, null for legacy compatibility ===
+    private Integer ownerId;
 
-	/**
+    public Integer getOwnerId() { return ownerId; }
+    public void setOwnerId(Integer ownerId) { this.ownerId = ownerId; }
+
+
+    /**
 	 * Speed of the bullet, positive or negative depending on direction -
 	 * positive is down.
 	 */
 	private int speed;
+
+	/** number of Penetrations */
+	private int penetrationCount;
+	/** Number of possible penetrations */
+	private int maxPenetration;
+
 
 	/**
 	 * Constructor, establishes the bullet's properties.
@@ -33,6 +45,9 @@ public class Bullet extends Entity {
 		super(positionX, positionY, 3 * 2, 5 * 2, Color.WHITE);
 
 		this.speed = speed;
+		this.penetrationCount = 0;
+		this.maxPenetration = ShopItem.getPenetrationCount();
+
 		setSprite();
 	}
 
@@ -71,4 +86,31 @@ public class Bullet extends Entity {
 	public final int getSpeed() {
 		return this.speed;
 	}
+
+	/**
+	 * getter Bullet persistence status
+	 * @return If true the bullet persists, If false it is deleted.
+	 */
+	public final boolean penetration() {
+		this.penetrationCount++;
+
+		return this.penetrationCount <= this.maxPenetration;
+	}
+
+	/**
+	 *Check for penetration possibility
+	 * @return True, Penetrable
+	 */
+	public final boolean canPenetration(){
+		return this.penetrationCount < this.maxPenetration;
+	}
+
+	/**
+	 * reset penetration setting
+	 */
+	public final void resetPenetration() {
+		this.penetrationCount = 0;
+		this.maxPenetration = ShopItem.getPenetrationCount();
+	}
+
 }

@@ -1,4 +1,6 @@
 package entity;
+import audio.SoundManager;
+
 
 import java.awt.Color;
 
@@ -25,10 +27,28 @@ public class EnemyShip extends Entity {
 
 	/** Cooldown between sprite changes. */
 	private Cooldown animationCooldown;
+    /** Cooldown between explosions. */
+    private Cooldown explosionCooldown;
 	/** Checks if the ship has been hit by a bullet. */
 	private boolean isDestroyed;
 	/** Values of the ship, in points, when destroyed. */
 	private int pointValue;
+
+	/** Special enemy Direction enum **/
+	public enum Direction {
+		/** Movement to the right side of the screen. */
+		RIGHT,
+		/** Movement to the left side of the screen. */
+		LEFT,
+		/** Movement to the bottom of the screen. */
+		DOWN
+	};
+
+	/** Special enemy Direction variable **/
+	private Direction direction;
+
+	/** Special enemy X_SPEED variable **/
+	private int X_SPEED = 0;
 
 	/**
 	 * Constructor, establishes the ship's properties.
@@ -46,6 +66,7 @@ public class EnemyShip extends Entity {
 
 		this.spriteType = spriteType;
 		this.animationCooldown = Core.getCooldown(500);
+        this.explosionCooldown = Core.getCooldown(500);
 		this.isDestroyed = false;
 
 		switch (this.spriteType) {
@@ -71,12 +92,15 @@ public class EnemyShip extends Entity {
 	 * Constructor, establishes the ship's properties for a special ship, with
 	 * known starting properties.
 	 */
-	public EnemyShip() {
-		super(-32, 60, 16 * 2, 7 * 2, Color.RED);
+	public EnemyShip(Color color, Direction direction, int x_speed) {
+		super(-32, 60, 16 * 2, 7 * 2, color);
 
+		this.direction = direction;
+		this.X_SPEED = x_speed;
 		this.spriteType = SpriteType.EnemyShipSpecial;
 		this.isDestroyed = false;
 		this.pointValue = BONUS_TYPE_POINTS;
+        this.explosionCooldown = Core.getCooldown(500);
 	}
 
 	/**
@@ -137,8 +161,13 @@ public class EnemyShip extends Entity {
 	 * Destroys the ship, causing an explosion.
 	 */
 	public final void destroy() {
-		this.isDestroyed = true;
-		this.spriteType = SpriteType.Explosion;
+        if (!this.isDestroyed) {
+            this.isDestroyed = true;
+            this.spriteType = SpriteType.Explosion;
+			SoundManager.stop("sfx/disappearance.wav");
+            SoundManager.play("sfx/disappearance.wav");
+            this.explosionCooldown.reset();
+        }
 	}
 
 	/**
@@ -148,5 +177,46 @@ public class EnemyShip extends Entity {
 	 */
 	public final boolean isDestroyed() {
 		return this.isDestroyed;
+	}
+
+	public final Direction getDirection() {
+		return this.direction;
+	}
+
+	public final void setDirection(final Direction direction) {
+		this.direction = direction;
+	}
+
+	public final int getXSpeed() {
+		return this.X_SPEED;
+	}
+
+	public final void setXSpeed(final int x_speed) {
+		this.X_SPEED = x_speed;
+	}
+
+    /**
+     * Check if the explosion effect is finished.
+     * @return True if the explosion is finished.
+     */
+    public final boolean isExplosionFinished() {
+        return this.isDestroyed && this.explosionCooldown.checkFinished();
+    }
+
+	public final String getEnemyType() {
+
+		switch (this.spriteType) {
+			case EnemyShipA1:
+			case EnemyShipA2:
+				return "enemyA";
+			case EnemyShipB1:
+			case EnemyShipB2:
+				return "enemyB";
+			case EnemyShipC1:
+			case EnemyShipC2:
+				return "enemyC";
+			default:
+				return null;
+		}
 	}
 }
