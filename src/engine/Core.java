@@ -268,7 +268,7 @@ public final class Core {
 	}
 
 	/**
-	 * Controls creation of new cooldowns.
+	 * Controls creation of new cooldowns.cd
 	 * 
 	 * @param milliseconds
 	 *            Duration of the cooldown.
@@ -292,3 +292,4 @@ public final class Core {
 		return new Cooldown(milliseconds, variance);
 	}
 }
+// commentaire
