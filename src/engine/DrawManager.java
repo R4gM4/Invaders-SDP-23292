@@ -711,6 +711,34 @@ public final class DrawManager {
 			backBufferGraphics.drawRect(screenX, screenY, 1, 1);
 		}
 	}
+	public void drawColorInstructions(Screen screen, int playerId, int x, int y) {
 
-    	public void drawShootingStars(final Screen screen, final List<ShootingStar> shootingStars, final float angle) {    }
+		if (backBufferGraphics == null) return;
+
+		// sauvegarde
+		Color oldColor = backBufferGraphics.getColor();
+		Font oldFont = backBufferGraphics.getFont();
+
+		// utilise la police REGULIÈRE chargée depuis resources/font.ttf
+		backBufferGraphics.setFont(fontRegular.deriveFont(12f));
+
+		backBufferGraphics.setColor(Color.WHITE);
+
+		String text;
+
+		if (playerId == 1)
+			text = "P1 : 1=B  2=R  3=V  4=Y";
+		else
+			text = "P2 : 7=B  8=R  9=V  0=Y";
+
+		backBufferGraphics.drawString(text, x, y);
+
+		// restore
+		backBufferGraphics.setColor(oldColor);
+		backBufferGraphics.setFont(oldFont);
+	}
+
+
+
+	public void drawShootingStars(final Screen screen, final List<ShootingStar> shootingStars, final float angle) {    }
 }

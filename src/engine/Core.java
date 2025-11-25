@@ -202,7 +202,7 @@ public final class Core {
                     break;
                 case 6:
                     // Achievements
-                    currentScreen = new AchievementScreen(width, height, FPS);
+                    currentScreen = new  AchievementScreen(width, height, FPS);
                     LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
                             + " achievement screen at " + FPS + " fps.");
                     returnCode = frame.setScreen(currentScreen);

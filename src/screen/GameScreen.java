@@ -436,6 +436,11 @@ public class GameScreen extends Screen {
         drawManager.drawCoin(this,this.coin);
 		drawManager.drawLives(this, this.livesP1);
 		drawManager.drawLivesP2(this, this.livesP2);
+
+		drawManager.drawColorInstructions(this, 1, 150, 20);
+
+		if (this.shipP2 != null) drawManager.drawColorInstructions(this, 2, 150,40);
+
 		drawManager.drawTime(this, this.elapsedTime);
 		drawManager.drawItemsHUD(this);
 		drawManager.drawLevel(this, this.currentLevel.getLevelName());
