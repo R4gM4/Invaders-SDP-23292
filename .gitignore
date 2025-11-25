@@ -168,6 +168,7 @@ pip-log.txt
 .idea/
 *.iml
 out/
+res/META-INF/
 
 #############
 ## Custom
