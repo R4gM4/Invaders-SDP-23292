@@ -137,6 +137,18 @@ public class GameScreen extends Screen {
   /** Health change popup. */
   private String healthPopupText;
   private Cooldown healthPopupCooldown;
+  /** Pause menu state. */
+  private boolean paused;
+  private int pauseSelection;
+  private Cooldown pauseInputCooldown;
+  private ExitAction exitAction = ExitAction.NONE;
+
+  /** Possible exit requests triggered from pause menu. */
+  public enum ExitAction {
+	  NONE,
+	  RESTART,
+	  MENU
+  }
 
 	    private GameState gameState;
 
@@ -217,6 +229,10 @@ public class GameScreen extends Screen {
 		this.finalBoss = null;
 		this.omegaBoss = null;
 		this.currentPhase = StagePhase.wave;
+		this.paused = false;
+		this.pauseSelection = 0;
+		this.pauseInputCooldown = Core.getCooldown(200);
+		this.pauseInputCooldown.reset();
 	}
 
 	/**
@@ -239,6 +255,13 @@ public class GameScreen extends Screen {
 	 */
 	protected final void update() {
 		super.update();
+
+		handlePauseToggle();
+		if (this.paused) {
+			handlePauseMenuInput();
+			draw();
+			return;
+		}
 
 		if (this.inputDelay.checkFinished() && !this.levelFinished) {
 
@@ -389,6 +412,60 @@ public class GameScreen extends Screen {
 		}
 	}
 
+	private void handlePauseToggle() {
+		if (this.pauseInputCooldown.checkFinished()
+				&& this.inputDelay.checkFinished()) {
+			if (inputManager.isKeyDown(KeyEvent.VK_ESCAPE)) {
+				this.paused = !this.paused;
+				if (this.paused) {
+					if (this.gameTimer.isRunning()) {
+						this.gameTimer.pause();
+					}
+				} else {
+					if (this.gameTimer.isRunning()) {
+						this.gameTimer.resume();
+					}
+				}
+				this.pauseInputCooldown.reset();
+			}
+		}
+	}
+
+	private void handlePauseMenuInput() {
+		if (!this.pauseInputCooldown.checkFinished()) {
+			return;
+		}
+
+		if (inputManager.isKeyDown(KeyEvent.VK_UP)) {
+			this.pauseSelection = (this.pauseSelection + 2) % 3;
+			this.pauseInputCooldown.reset();
+		} else if (inputManager.isKeyDown(KeyEvent.VK_DOWN)) {
+			this.pauseSelection = (this.pauseSelection + 1) % 3;
+			this.pauseInputCooldown.reset();
+		} else if (inputManager.isKeyDown(KeyEvent.VK_SPACE)
+				|| inputManager.isKeyDown(KeyEvent.VK_ENTER)) {
+			switch (this.pauseSelection) {
+			case 0:
+				this.paused = false;
+				if (this.gameTimer.isRunning()) {
+					this.gameTimer.resume();
+				}
+				break;
+			case 1:
+				this.exitAction = ExitAction.RESTART;
+				this.isRunning = false;
+				break;
+			case 2:
+				this.exitAction = ExitAction.MENU;
+				this.isRunning = false;
+				break;
+			default:
+				break;
+			}
+			this.pauseInputCooldown.reset();
+		}
+	}
+
 
 	/**
 	 * Draws the elements associated with the screen.
@@ -466,6 +543,11 @@ public class GameScreen extends Screen {
 					/ 12);
 			drawManager.drawHorizontalLine(this, this.height / 2 + this.height
 					/ 12);
+		}
+
+		if (this.paused) {
+			String[] options = {"Resume", "Restart", "Main menu"};
+			drawManager.drawPauseMenu(this, "Pause", options, this.pauseSelection);
 		}
 
 		drawManager.completeDrawing(this);
@@ -888,6 +970,10 @@ public class GameScreen extends Screen {
 	        return new GameState(this.level, this.score, this.livesP1,this.livesP2,
 	                this.bulletsShot, this.shipsDestroyed,this.coin);
 	    }
+
+	public ExitAction getExitAction() {
+		return this.exitAction;
+	}
 	/**
 	 * Adds one life to the player.
 	 */

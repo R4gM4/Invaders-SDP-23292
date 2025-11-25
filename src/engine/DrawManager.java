@@ -258,6 +258,35 @@ public final class DrawManager {
 		itemHUD.drawItems(screen, backBufferGraphics);
 	}
 
+	/**
+	 * Draws a simple pause menu overlay.
+	 */
+	public void drawPauseMenu(final Screen screen, final String title, final String[] options, final int selectedIndex) {
+		int overlayWidth = screen.getWidth() - 80;
+		int overlayHeight = 200;
+		int x = 40;
+		int y = screen.getHeight() / 2 - overlayHeight / 2;
+
+		backBufferGraphics.setColor(new Color(0, 0, 0, 200));
+		backBufferGraphics.fillRoundRect(x, y, overlayWidth, overlayHeight, 20, 20);
+		backBufferGraphics.setColor(Color.GREEN);
+		backBufferGraphics.drawRoundRect(x, y, overlayWidth, overlayHeight, 20, 20);
+
+		backBufferGraphics.setFont(fontBig);
+		drawCenteredBigString(screen, title, y + 40);
+
+		backBufferGraphics.setFont(fontRegular);
+		for (int i = 0; i < options.length; i++) {
+			if (i == selectedIndex) {
+				float pulse = (float) ((Math.sin(System.currentTimeMillis() / 180.0) + 1.0) / 2.0);
+				backBufferGraphics.setColor(new Color(0, 255, 128, 180 + (int) (pulse * 75)));
+			} else {
+				backBufferGraphics.setColor(Color.WHITE);
+			}
+			drawCenteredRegularString(screen, options[i], y + 80 + i * fontRegularMetrics.getHeight() * 2);
+		}
+	}
+
     /**
      * Draws the current level on the bottom-left of the screen.
      */

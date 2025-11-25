@@ -9,11 +9,17 @@ public class GameTimer {
     private long startTime;
     private long stopTime;
     private boolean running;
+    private boolean paused;
+    private long pausedStartTime;
+    private long pausedAccumulated;
     
     public GameTimer() {
         this.startTime = 0L;
         this.stopTime = 0L;
         this.running = false;
+        this.paused = false;
+        this.pausedStartTime = 0L;
+        this.pausedAccumulated = 0L;
     }
 
     /**
@@ -23,6 +29,8 @@ public class GameTimer {
         this.startTime = System.nanoTime();
         this.running = true;
         this.stopTime = 0L;
+        this.paused = false;
+        this.pausedAccumulated = 0L;
     }
 
     /**
@@ -30,8 +38,31 @@ public class GameTimer {
      */
     public void stop() {
         if (this.running) {
+            if (this.paused) {
+                resume();
+            }
             this.stopTime = System.nanoTime();
             this.running = false;
+        }
+    }
+
+    /**
+     * Pauses the timer without losing elapsed time.
+     */
+    public void pause() {
+        if (this.running && !this.paused) {
+            this.paused = true;
+            this.pausedStartTime = System.nanoTime();
+        }
+    }
+
+    /**
+     * Resumes the timer after being paused.
+     */
+    public void resume() {
+        if (this.running && this.paused) {
+            this.pausedAccumulated += System.nanoTime() - this.pausedStartTime;
+            this.paused = false;
         }
     }
 
@@ -39,8 +70,13 @@ public class GameTimer {
      * @return Elapsed time in milliseconds.
      */
     public long getElapsedTime() {
-        final long endTime = this.running ? System.nanoTime() : this.stopTime;
-        return (endTime - this.startTime) / 1000000;
+        final long endTime;
+        if (this.running) {
+            endTime = this.paused ? this.pausedStartTime : System.nanoTime();
+        } else {
+            endTime = this.stopTime;
+        }
+        return (endTime - this.startTime - this.pausedAccumulated) / 1_000_000;
     }
 
     /**
