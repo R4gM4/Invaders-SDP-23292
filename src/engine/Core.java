@@ -15,10 +15,12 @@ import screen.GameScreen;
 import screen.HighScoreScreen;
 import screen.ScoreScreen;
 import screen.Screen;
+import screen.ShopScreen;
 import screen.TitleScreen;
 import screen.AchievementScreen;
 import engine.level.LevelManager;
 import screen.ShopScreen;
+import screen.*;
 
 /**
  * Implements core game logic.
@@ -86,16 +88,18 @@ public final class Core {
 		int height = frame.getHeight();
 
 		levelManager = new LevelManager();
-		GameState gameState;
+		GameState gameState = new GameState(1, 0, MAX_LIVES, MAX_LIVES, 0, 0,0);
 
-		int returnCode = 1;
+
+        int returnCode = 1;
 		do {
-			gameState = new GameState(1, 0, MAX_LIVES, 0, 0,100);
-
+            gameState = new GameState(1, 0, MAX_LIVES,MAX_LIVES, 0, 0,gameState.getCoin());
 			switch (returnCode) {
                 case 1:
                     // Main menu.
                     currentScreen = new TitleScreen(width, height, FPS);
+					SoundManager.stopAll();
+					SoundManager.playLoop("sfx/menu_music.wav");
                     LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
                             + " title screen at " + FPS + " fps.");
                     returnCode = frame.setScreen(currentScreen);
@@ -108,6 +112,7 @@ public final class Core {
                                 % EXTRA_LIFE_FRECUENCY == 0
                                 && gameState.getLivesRemaining() < MAX_LIVES;
 
+						// Music for each level
 						SoundManager.stopAll();
 						SoundManager.playLoop("sfx/level" + gameState.getLevel() + ".wav");
 
@@ -119,6 +124,9 @@ public final class Core {
                           // This will be important when the number of levels is defined by maps.json
                           break;
                         }
+
+						SoundManager.stopAll();
+						SoundManager.playLoop("sfx/level" + gameState.getLevel() + ".wav");
 
                         // Start a new level
                         currentScreen = new GameScreen(
@@ -135,14 +143,13 @@ public final class Core {
                                 + " game screen at " + FPS + " fps.");
                         frame.setScreen(currentScreen);
                         LOGGER.info("Closing game screen.");
-
                         gameState = ((GameScreen) currentScreen).getGameState();
-
-                        if (gameState.getLivesRemaining() > 0) {
-                            LOGGER.info("Opening shop screen with "
-                                    + gameState.getCoin() + " coins.");
-
+                        if (gameState.getLivesRemaining() > 0 || gameState.getLivesRemainingP2() > 0) {
+							SoundManager.stopAll();
 							SoundManager.play("sfx/levelup.wav");
+
+							LOGGER.info("Opening shop screen with "
+                                    + gameState.getCoin() + " coins.");
 
                             //Launch the ShopScreen (between levels)
                             currentScreen = new ShopScreen(gameState, width, height, FPS, true);
@@ -154,17 +161,19 @@ public final class Core {
                                     gameState.getLevel() + 1,          // Increment level
                                     gameState.getScore(),              // Keep current score
                                     gameState.getLivesRemaining(),     // Keep remaining lives
+									gameState.getLivesRemainingP2(),   // Keep remaining livesP2
                                     gameState.getBulletsShot(),        // Keep bullets fired
                                     gameState.getShipsDestroyed(),     // Keep ships destroyed
                                     gameState.getCoin()                // Keep current coins
                             );
                         }
                         // Loop while player still has lives and levels remaining
-                    } while (gameState.getLivesRemaining() > 0);
+                    } while (gameState.getLivesRemaining() > 0 || gameState.getLivesRemainingP2() > 0);
 
+					SoundManager.stopAll();
 					SoundManager.play("sfx/gameover.wav");
 
-					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
+                    LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
                             + " score screen at " + FPS + " fps, with a score of "
                             + gameState.getScore() + ", "
                             + gameState.getLivesRemaining() + " lives remaining, "
@@ -185,6 +194,7 @@ public final class Core {
                     break;
                 case 4:
                     // Shop opened manually from main menu
+
                     currentScreen = new ShopScreen(gameState, width, height, FPS, false);
                     LOGGER.info("Starting shop screen (menu) with " + gameState.getCoin() + " coins.");
                     returnCode = frame.setScreen(currentScreen);
@@ -198,7 +208,11 @@ public final class Core {
                     returnCode = frame.setScreen(currentScreen);
                     LOGGER.info("Closing achievement screen.");
                     break;
-
+				case 8: // (추가) CreditScreen
+					currentScreen = new CreditScreen(width, height, FPS);
+					LOGGER.info("Starting " + currentScreen.getClass().getSimpleName() + " screen.");
+					returnCode = frame.setScreen(currentScreen);
+					break;
                 default:
                     break;
             }

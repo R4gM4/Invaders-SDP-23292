@@ -164,6 +164,7 @@ public class EnemyShip extends Entity {
         if (!this.isDestroyed) {
             this.isDestroyed = true;
             this.spriteType = SpriteType.Explosion;
+			SoundManager.stop("sfx/disappearance.wav");
             SoundManager.play("sfx/disappearance.wav");
             this.explosionCooldown.reset();
         }
@@ -201,4 +202,21 @@ public class EnemyShip extends Entity {
     public final boolean isExplosionFinished() {
         return this.isDestroyed && this.explosionCooldown.checkFinished();
     }
+
+	public final String getEnemyType() {
+
+		switch (this.spriteType) {
+			case EnemyShipA1:
+			case EnemyShipA2:
+				return "enemyA";
+			case EnemyShipB1:
+			case EnemyShipB2:
+				return "enemyB";
+			case EnemyShipC1:
+			case EnemyShipC2:
+				return "enemyC";
+			default:
+				return null;
+		}
+	}
 }

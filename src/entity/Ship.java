@@ -31,6 +31,10 @@ public class Ship extends Entity {
 	private Cooldown shieldCooldown;
 	/** Checks if the ship is invincible. */
 	private boolean isInvincible;
+    // === [ADD] Which player: 1 = P1, 2 = P2 (default 1 for single-player compatibility) ===
+    private int playerId = 1;
+    public void setPlayerId(int pid) { this.playerId = pid; }
+    public int getPlayerId() { return this.playerId; }
 
 	/**
 	 * Constructor, establishes the ship's properties.
@@ -40,8 +44,8 @@ public class Ship extends Entity {
 	 * @param positionY
 	 *            Initial position of the ship in the Y axis.
 	 */
-	public Ship(final int positionX, final int positionY) {
-		super(positionX, positionY, 13 * 2, 8 * 2, Color.GREEN);
+	public Ship(final int positionX, final int positionY,final Color color) {
+		super(positionX, positionY, 13 * 2, 8 * 2, color);
 
 		this.spriteType = SpriteType.Ship;
 		this.shootingCooldown = Core.getCooldown(ShopItem.getShootingInterval());
@@ -107,20 +111,27 @@ public class Ship extends Entity {
 
 			if (bulletCount == 1) {
 				// Normal shot (when Spread Shot is not purchased)
-				bullets.add(BulletPool.getBullet(centerX, centerY, BULLET_SPEED));
+				Bullet b = BulletPool.getBullet(centerX, centerY, BULLET_SPEED);
+				SoundManager.stop("sfx/laser.wav");
+                SoundManager.play("sfx/laser.wav");
+                b.setOwnerId(this.playerId);  // === [ADD] Ownership flag: 1 = P1, 2 = P2, null for legacy logic ===
+
+                bullets.add(b);
 			} else {
 				// Fire Spread Shot
 				int startOffset = -(bulletCount / 2) * spacing;
 
 				for (int i = 0; i < bulletCount; i++) {
 					int offsetX = startOffset + (i * spacing);
-					bullets.add(BulletPool.getBullet(
-							centerX + offsetX,
-							centerY,
-							BULLET_SPEED
-					));
+                    Bullet b = BulletPool.getBullet(centerX + offsetX, centerY, BULLET_SPEED);
+                    b.setOwnerId(this.playerId);   // Ownership flag
+
+                    bullets.add(b);
+
+                    // might consider putting a different sound
+					SoundManager.stop("sfx/laser.wav");
                     SoundManager.play("sfx/laser.wav");
-				}
+                }
 			}
 			return true;
 		}
@@ -144,12 +155,13 @@ public class Ship extends Entity {
 
 	/**
 	 * Switches the ship to its destroyed state.
-     */
-    public final void destroy() {
+	 */
+	public final void destroy() {
         if (!this.isInvincible) {
+			SoundManager.stop("sfx/impact.wav");
             SoundManager.play("sfx/impact.wav");
             this.destructionCooldown.reset();
-	    }
+        }
     }
 
 	/**
