@@ -715,11 +715,11 @@ public final class DrawManager {
 
 		if (backBufferGraphics == null) return;
 
-		// sauvegarde
+
 		Color oldColor = backBufferGraphics.getColor();
 		Font oldFont = backBufferGraphics.getFont();
 
-		// utilise la police REGULIÈRE chargée depuis resources/font.ttf
+
 		backBufferGraphics.setFont(fontRegular.deriveFont(12f));
 
 		backBufferGraphics.setColor(Color.WHITE);
@@ -733,7 +733,7 @@ public final class DrawManager {
 
 		backBufferGraphics.drawString(text, x, y);
 
-		// restore
+
 		backBufferGraphics.setColor(oldColor);
 		backBufferGraphics.setFont(oldFont);
 	}
