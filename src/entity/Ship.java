@@ -22,7 +22,7 @@ public class Ship extends Entity {
 	private Cooldown shootingCooldown;
 	private Cooldown destructionCooldown;
 	private Cooldown shieldCooldown;
-	private boolean isInvincible;
+	public boolean isInvincible;
 
 	// === Player ID (1 = P1, 2 = P2) ===
 	private int playerId = 1;
@@ -91,19 +91,19 @@ public class Ship extends Entity {
 	}
 
 	public final void update() {
-		// --- Invincibilité ---
+
 		if (this.isInvincible && this.shieldCooldown.checkFinished()) {
 			this.isInvincible = false;
 			this.setColor(Color.GREEN);
 		}
 
-		// --- Changement de sprite selon destruction ---
+
 		if (!this.destructionCooldown.checkFinished())
 			this.spriteType = SpriteType.ShipDestroyed;
 		else
 			this.spriteType = SpriteType.Ship;
 
-		// --- Changement de couleur selon touches ---
+
 		InputManager input = Core.getInputManager();
 		if (playerId == 1) {
 			if (input.isKeyDown(KeyEvent.VK_1)) this.setColor(Color.BLUE);
