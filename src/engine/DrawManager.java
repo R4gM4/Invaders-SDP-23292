@@ -333,6 +333,7 @@ public final class DrawManager {
 	 */
 	public void drawMenu(final Screen screen, final int option) {
 		String playString = "Play";
+        String levelsString = "Levels";
         String highScoresString = "High scores";
         String achievementsString = "Achievements";
         String shopString = "Shop";
@@ -346,21 +347,25 @@ public final class DrawManager {
         else backBufferGraphics.setColor(Color.WHITE);
         drawCenteredRegularString(screen, playString, screen.getHeight() / 3 * 2);
 
+        if (option == 7) backBufferGraphics.setColor(pulseColor);
+        else backBufferGraphics.setColor(Color.WHITE);
+        drawCenteredRegularString(screen, levelsString,screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight() * 1);
+
         if (option == 3) backBufferGraphics.setColor(pulseColor);
         else backBufferGraphics.setColor(Color.WHITE);
-        drawCenteredRegularString(screen, highScoresString, screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight() * 1);
+        drawCenteredRegularString(screen, highScoresString, screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight() * 2);
 
         if (option == 6) backBufferGraphics.setColor(pulseColor);
         else backBufferGraphics.setColor(Color.WHITE);
-        drawCenteredRegularString(screen, achievementsString, screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight() * 2);
+        drawCenteredRegularString(screen, achievementsString, screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight() * 3);
 
         if (option == 4) backBufferGraphics.setColor(pulseColor);
         else backBufferGraphics.setColor(Color.WHITE);
-        drawCenteredRegularString(screen, shopString, screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight() * 3);
+        drawCenteredRegularString(screen, shopString, screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight() * 4);
 
         if (option == 0) backBufferGraphics.setColor(pulseColor);
         else backBufferGraphics.setColor(Color.WHITE);
-        drawCenteredRegularString(screen, exitString, screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight() * 4);
+        drawCenteredRegularString(screen, exitString, screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight() * 5);
 	}
 
 	/**
@@ -676,7 +681,77 @@ public final class DrawManager {
 		drawCenteredRegularString(screen, message, y + popupHeight / 2 + 5);
 	}
 
-	/**
+    private int currentSelection = 0;
+    private int maxUnlockedLevel = 0;
+
+    /**
+     * Sets the current selection index.
+     */
+    public void setCurrentSelection(int selection) {
+        this.currentSelection = selection;
+    }
+
+    /**
+     * Sets the maximum unlocked level.
+     */
+    public void setMaxUnlockedLevel(int maxLevel) {
+        this.maxUnlockedLevel = maxLevel;
+    }
+
+    /**
+     * Draws the header of the levels screen.
+     */
+    public int drawLevelsScreenHeader(final screen.LevelsScreen screen) {
+        backBufferGraphics.setColor(Color.GREEN);
+        drawCenteredBigString(screen, "Levels", screen.getHeight() / 8);
+        backBufferGraphics.setColor(Color.GRAY);
+        int instructionY1 = screen.getHeight() / 5;
+        int instructionY2 = instructionY1 + 20;
+        drawCenteredRegularString(screen, "Select a level and press SPACE to start", instructionY1);
+        drawCenteredRegularString(screen, "Press ESC to go back to the main menu", instructionY2);
+
+        return instructionY2 + fontRegularMetrics.getHeight() + 10;
+    }
+
+
+    /**
+     * Draws the list of levels on the levels screen.
+     */
+    public void drawLevelsMenu(final screen.LevelsScreen screen, final String[] levelNames) {
+        int headerBottom = drawLevelsScreenHeader(screen);
+        int spacing = 40;
+
+        for (int i = 0; i < levelNames.length; i++) {
+            boolean locked = i > maxUnlockedLevel;
+            boolean selected = i == currentSelection;
+            drawLevelItem(screen, levelNames[i], headerBottom + i * spacing, selected, locked);
+        }
+    }
+
+
+
+    /**
+     * Draws a single level item with selection and lock states.
+     */
+    public void drawLevelItem(final screen.LevelsScreen screen, String levelName, int yPosition, boolean selected, boolean locked) {
+        if (locked) {
+            backBufferGraphics.setColor(Color.GRAY);
+            levelName = levelName;
+        } else if (selected) {
+            backBufferGraphics.setColor(Color.GREEN);
+        } else {
+            backBufferGraphics.setColor(Color.WHITE);
+        }
+
+        FontMetrics fm = backBufferGraphics.getFontMetrics();
+        int adjustedY = yPosition + fm.getAscent();
+
+        drawCenteredRegularString(screen, levelName, adjustedY);
+    }
+
+
+
+    /**
 	 * Draws the starfield background.
 	 * 
 	 * @param screen
@@ -714,3 +789,5 @@ public final class DrawManager {
 
     	public void drawShootingStars(final Screen screen, final List<ShootingStar> shootingStars, final float angle) {    }
 }
+
+

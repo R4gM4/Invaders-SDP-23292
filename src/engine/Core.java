@@ -20,6 +20,7 @@ import screen.TitleScreen;
 import screen.AchievementScreen;
 import engine.level.LevelManager;
 import screen.ShopScreen;
+import screen.LevelsScreen;
 import screen.*;
 
 /**
@@ -42,6 +43,11 @@ public final class Core {
 	/** Levels between extra life. */
 	private static final int EXTRA_LIFE_FRECUENCY = 3;
 
+    /** Saved unlocked levels to persist across screens. */
+    private static boolean[] savedUnlockedLevels = new boolean[7];
+    static {
+        savedUnlockedLevels[0] = true;
+    }
 	/** Frame to draw the screen on. */
 	private static Frame frame;
 	/** Screen currently shown. */
@@ -93,8 +99,20 @@ public final class Core {
 
         int returnCode = 1;
 		do {
-            gameState = new GameState(1, 0, MAX_LIVES,MAX_LIVES, 0, 0,gameState.getCoin());
-			switch (returnCode) {
+            boolean[] previousUnlocked = gameState.getUnlockedLevels();
+
+            gameState = new GameState(
+                    gameState.getLevel(),
+                    0,
+                    MAX_LIVES,
+                    MAX_LIVES,
+                    0,
+                    0,
+                    gameState.getCoin(),
+                    savedUnlockedLevels
+            );
+
+            switch (returnCode) {
                 case 1:
                     // Main menu.
                     currentScreen = new TitleScreen(width, height, FPS);
@@ -148,6 +166,10 @@ public final class Core {
 							SoundManager.stopAll();
 							SoundManager.play("sfx/levelup.wav");
 
+                            gameState.unlockNextLevel();
+
+                            savedUnlockedLevels = gameState.getUnlockedLevels();
+
 							LOGGER.info("Opening shop screen with "
                                     + gameState.getCoin() + " coins.");
 
@@ -164,14 +186,19 @@ public final class Core {
 									gameState.getLivesRemainingP2(),   // Keep remaining livesP2
                                     gameState.getBulletsShot(),        // Keep bullets fired
                                     gameState.getShipsDestroyed(),     // Keep ships destroyed
-                                    gameState.getCoin()                // Keep current coins
+                                    gameState.getCoin(),               // Keep current coins
+                                    savedUnlockedLevels                // Keep current level
                             );
+
+                            gameState.unlockLevel(gameState.getLevel() - 1); // -1 because 0-based
                         }
                         // Loop while player still has lives and levels remaining
                     } while (gameState.getLivesRemaining() > 0 || gameState.getLivesRemainingP2() > 0);
 
 					SoundManager.stopAll();
 					SoundManager.play("sfx/gameover.wav");
+
+                    boolean[] savedUnlockedLevels = gameState.getUnlockedLevels().clone();
 
                     LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
                             + " score screen at " + FPS + " fps, with a score of "
@@ -183,6 +210,18 @@ public final class Core {
                     currentScreen = new ScoreScreen(width, height, FPS, gameState);
                     returnCode = frame.setScreen(currentScreen);
                     LOGGER.info("Closing score screen.");
+
+                    gameState = new GameState(
+                            1,
+                            0,
+                            MAX_LIVES,
+                            MAX_LIVES,
+                            0,
+                            0,
+                            gameState.getCoin(),
+                            savedUnlockedLevels
+                    );
+
                     break;
                 case 3:
                     // High scores
@@ -208,7 +247,16 @@ public final class Core {
                     returnCode = frame.setScreen(currentScreen);
                     LOGGER.info("Closing achievement screen.");
                     break;
-				case 8: // (추가) CreditScreen
+                case 7:
+                    // Levels screen
+                    currentScreen = new LevelsScreen(gameState, width, height, FPS);
+                    LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
+                            + " levels screen at " + FPS + " fps.");
+                    returnCode = frame.setScreen(currentScreen);
+                    LOGGER.info("Closing levels screen.");
+                    break;
+
+                case 8: // (추가) CreditScreen
 					currentScreen = new CreditScreen(width, height, FPS);
 					LOGGER.info("Starting " + currentScreen.getClass().getSimpleName() + " screen.");
 					returnCode = frame.setScreen(currentScreen);

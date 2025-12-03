@@ -22,6 +22,9 @@ public class GameState {
     /** Current coin. */
     private int coin;
 
+    /** Which levels are unlocked */
+    private boolean[] unlockedLevels;
+
 
 	/**
 	 * Constructor.
@@ -41,17 +44,31 @@ public class GameState {
 	 * @param shipsDestroyed
 	 *            Ships destroyed until now.
 	 */
-	public GameState(final int level, final int score,
-			final int livesRemaining,final int livesRemainingP2, final int bulletsShot,
-			final int shipsDestroyed, final int coin) {
-		this.level = level;
-		this.score = score;
-		this.livesRemaining = livesRemaining;
-		this.livesRemainingP2 = livesRemainingP2;
-		this.bulletsShot = bulletsShot;
+    public GameState(final int level, final int score,
+                     final int livesRemaining, final int livesRemainingP2, final int bulletsShot,
+                     final int shipsDestroyed, final int coin, final boolean[] unlockedLevels) {
+        this.level = level;
+        this.score = score;
+        this.livesRemaining = livesRemaining;
+        this.livesRemainingP2 = livesRemainingP2;
+        this.bulletsShot = bulletsShot;
         this.shipsDestroyed = shipsDestroyed;
         this.coin = coin;
-		    }
+
+        if (unlockedLevels != null) {
+            this.unlockedLevels = unlockedLevels;
+        } else {
+            int totalLevels = 7;
+            this.unlockedLevels = new boolean[totalLevels];
+            this.unlockedLevels[0] = true;
+        }
+    }
+
+    public GameState(final int level, final int score,
+                     final int livesRemaining, final int livesRemainingP2, final int bulletsShot,
+                     final int shipsDestroyed, final int coin) {
+        this(level, score, livesRemaining, livesRemainingP2, bulletsShot, shipsDestroyed, coin, null);
+    }
 	/**
 	 * @return the level
 	 */
@@ -93,6 +110,13 @@ public class GameState {
 
     public final int getCoin() { return coin; }
 
+    /**
+     * @return the unlocked levels
+     */
+    public boolean[] getUnlockedLevels() {
+        return unlockedLevels;
+    }
+
 	public final boolean deductCoins(final int amount) {
 		if (amount < 0) {
 			return false;
@@ -115,4 +139,29 @@ public class GameState {
 			this.coin = amount;
 		}
 	}
+
+    public final void setLevel(final int level) {
+        if (level >= 0) {
+            this.level = level;
+        }
+    }
+
+    // levels unlocked
+    public boolean isLevelUnlocked (int index) {
+        return index >= 0 && index < unlockedLevels.length && unlockedLevels[index];
+    }
+
+    public void unlockLevel(int index){
+        if (index >= 0 && index <unlockedLevels.length){
+            unlockedLevels[index] = true;
+        }
+    }
+
+    public void unlockNextLevel() {
+        int nextLevel = this.level;
+        if (nextLevel >= 0 && nextLevel < unlockedLevels.length) {
+            unlockedLevels[nextLevel] = true;
+        }
+    }
 }
+
