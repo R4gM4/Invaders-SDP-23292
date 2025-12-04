@@ -332,6 +332,7 @@ public final class DrawManager {
 	 * Draws main menu.
 	 */
 	public void drawMenu(final Screen screen, final int option) {
+		String playersString = TitleScreen.getNumberOfPlayers() == 1 ? "1 Player" : "2 Players";
 		String playString = "Play";
         String highScoresString = "High scores";
         String achievementsString = "Achievements";
@@ -342,25 +343,29 @@ public final class DrawManager {
 		float pulse = (float) ((Math.sin(System.currentTimeMillis() / 200.0) + 1.0) / 2.0);
 		Color pulseColor = new Color(0, 0.5f + pulse * 0.5f, 0);
 
+        if (option == 7) backBufferGraphics.setColor(pulseColor);
+        else backBufferGraphics.setColor(Color.WHITE);
+        drawCenteredRegularString(screen, playersString, screen.getHeight() / 3 * 2);
+
         if (option == 2) backBufferGraphics.setColor(pulseColor);
         else backBufferGraphics.setColor(Color.WHITE);
-        drawCenteredRegularString(screen, playString, screen.getHeight() / 3 * 2);
+        drawCenteredRegularString(screen, playString, screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight() * 1);
 
         if (option == 3) backBufferGraphics.setColor(pulseColor);
         else backBufferGraphics.setColor(Color.WHITE);
-        drawCenteredRegularString(screen, highScoresString, screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight() * 1);
+        drawCenteredRegularString(screen, highScoresString, screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight() * 2);
 
         if (option == 6) backBufferGraphics.setColor(pulseColor);
         else backBufferGraphics.setColor(Color.WHITE);
-        drawCenteredRegularString(screen, achievementsString, screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight() * 2);
+        drawCenteredRegularString(screen, achievementsString, screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight() * 3);
 
         if (option == 4) backBufferGraphics.setColor(pulseColor);
         else backBufferGraphics.setColor(Color.WHITE);
-        drawCenteredRegularString(screen, shopString, screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight() * 3);
+        drawCenteredRegularString(screen, shopString, screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight() * 4);
 
         if (option == 0) backBufferGraphics.setColor(pulseColor);
         else backBufferGraphics.setColor(Color.WHITE);
-        drawCenteredRegularString(screen, exitString, screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight() * 4);
+        drawCenteredRegularString(screen, exitString, screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight() * 5);
 	}
 
 	/**
