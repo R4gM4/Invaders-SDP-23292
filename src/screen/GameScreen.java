@@ -174,7 +174,9 @@ public class GameScreen extends Screen {
 		        this.gameState = gameState;
 				if (this.bonusLife) {
 					this.livesP1++;
-					this.livesP2++;
+					if (TitleScreen.getNumberOfPlayers() == 2) {
+						this.livesP2++;
+					}
 				}
 		this.bulletsShot = gameState.getBulletsShot();
 		this.shipsDestroyed = gameState.getShipsDestroyed();
@@ -234,7 +236,9 @@ public class GameScreen extends Screen {
 		super.run();
 
 		this.score += LIFE_SCORE * (this.livesP1 - 1);
-		this.score += LIFE_SCORE * (this.livesP2 - 1);
+		if (TitleScreen.getNumberOfPlayers() == 2) {
+			this.score += LIFE_SCORE * (this.livesP2 - 1);
+		}
 		this.logger.info("Screen cleared with a score of " + this.score);
 
 		return this.returnCode;
@@ -438,10 +442,14 @@ public class GameScreen extends Screen {
 
 		// Interface.
         drawManager.drawScore(this, this.scoreP1);   // Top line still displays P1
-        drawManager.drawScoreP2(this, this.scoreP2); // Added second line for P2
+        if (TitleScreen.getNumberOfPlayers() == 2) {
+            drawManager.drawScoreP2(this, this.scoreP2); // Added second line for P2
+        }
         drawManager.drawCoin(this,this.coin);
 		drawManager.drawLives(this, this.livesP1);
-		drawManager.drawLivesP2(this, this.livesP2);
+		if (TitleScreen.getNumberOfPlayers() == 2) {
+			drawManager.drawLivesP2(this, this.livesP2);
+		}
 		drawManager.drawTime(this, this.elapsedTime);
 		drawManager.drawItemsHUD(this);
 		drawManager.drawLevel(this, this.currentLevel.getLevelName());
