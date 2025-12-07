@@ -8,7 +8,6 @@ import java.util.Random;
 
 import engine.Cooldown;
 import engine.Core;
-import engine.DrawManager;
 import engine.DrawManager.SpriteType;
 import entity.Entity;
 import entity.SoundButton;
@@ -94,23 +93,21 @@ public class TitleScreen extends Screen {
     private static final double SHOOTING_STAR_SPAWN_CHANCE = 0.2;
 
 	/** Time between changes in user selection. */
-	private Cooldown selectionCooldown;
+	private final Cooldown selectionCooldown;
 	/** Cooldown for enemy spawning. */
-	private Cooldown enemySpawnCooldown;
+	private final Cooldown enemySpawnCooldown;
 	/** Cooldown for shooting star spawning. */
-    private Cooldown shootingStarCooldown;
+    private final Cooldown shootingStarCooldown;
 
 	/** List of stars for the background animation. */
-	private List<Star> stars;
+	private final List<Star> stars;
 	/** List of background enemies. */
-	private List<Entity> backgroundEnemies;
+	private final List<Entity> backgroundEnemies;
 	/** List of shooting stars. */
-    private List<ShootingStar> shootingStars;
+    private final List<ShootingStar> shootingStars;
 
 	/** Sound button on/off object. */
-	private SoundButton soundButton;
-
-    private boolean musicStarted = false;
+	private final SoundButton soundButton;
 
 	/** Number of players selected (1 or 2). */
 	private static int numberOfPlayers = 1;
@@ -137,7 +134,7 @@ public class TitleScreen extends Screen {
 		super(width, height, fps);
 
 		// Defaults to player selection.
-		this.returnCode = 7;
+		this.returnCode = 9;
 		this.soundButton = new SoundButton(0, 0);
 		this.selectionCooldown = Core.getCooldown(SELECTION_TIME);
 		this.enemySpawnCooldown = Core.getCooldown(ENEMY_SPAWN_COOLDOWN);
@@ -263,7 +260,7 @@ public class TitleScreen extends Screen {
 				this.selectionCooldown.reset();
 			}
 			if (inputManager.isKeyDown(KeyEvent.VK_SPACE)){
-				if (this.returnCode == 7) {
+				if (this.returnCode == 9) {
 					numberOfPlayers = (numberOfPlayers == 1) ? 2 : 1;
 					this.selectionCooldown.reset();
 				} else if (this.returnCode != 5) {
@@ -305,9 +302,11 @@ public class TitleScreen extends Screen {
 	 */
 	private void nextMenuItem() {
 		SoundManager.play("sfx/menu_select.wav");
-		if (this.returnCode == 7)
+		if (this.returnCode == 9)
 			this.returnCode = 2;
 		else if (this.returnCode == 2)
+			this.returnCode = 7;
+		else if (this.returnCode == 7)
 			this.returnCode = 3;
 		else if (this.returnCode == 3)
 			this.returnCode = 6;
@@ -316,22 +315,20 @@ public class TitleScreen extends Screen {
 		else if (this.returnCode == 4)
 			this.returnCode = 0;
 		else if (this.returnCode == 0)
-			this.returnCode = 7;
-		else if (this.returnCode == 5) {
-			this.returnCode = 0;
-		}
+			this.returnCode = 9;
+
 		this.targetAngle += 90;
 	}
+
 
 	/**
 	 * Shifts the focus to the previous menu item.
 	 */
 	private void previousMenuItem() {
 		SoundManager.play("sfx/menu_select.wav");
-		if (this.returnCode == 7)
+
+		if (this.returnCode == 9)
 			this.returnCode = 0;
-		else if (this.returnCode == 2)
-			this.returnCode = 7;
 		else if (this.returnCode == 0)
 			this.returnCode = 4;
 		else if (this.returnCode == 4)
@@ -339,12 +336,18 @@ public class TitleScreen extends Screen {
 		else if (this.returnCode == 6)
 			this.returnCode = 3;
 		else if (this.returnCode == 3)
+			this.returnCode = 7;
+		else if (this.returnCode == 7)
 			this.returnCode = 2;
+		else if (this.returnCode == 2)
+			this.returnCode = 9;
 		else if (this.returnCode == 5) {
 			this.returnCode = 6;
 		}
+
 		this.targetAngle -= 90;
 	}
+
 
 	/**
 	 * Draws the elements associated with the screen.

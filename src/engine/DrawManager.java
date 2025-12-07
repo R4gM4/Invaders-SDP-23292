@@ -388,17 +388,17 @@ public final class DrawManager {
 		float pulse = (float) ((Math.sin(System.currentTimeMillis() / 200.0) + 1.0) / 2.0);
 		Color pulseColor = new Color(0, 0.5f + pulse * 0.5f, 0);
 
-        if (option == 7) backBufferGraphics.setColor(pulseColor);
-        else backBufferGraphics.setColor(Color.WHITE);
-        drawCenteredRegularString(screen, playersString, screen.getHeight() / 3 * 2);
+		if (option == 9) backBufferGraphics.setColor(pulseColor);
+		else backBufferGraphics.setColor(Color.WHITE);
+		drawCenteredRegularString(screen, playersString, screen.getHeight() / 3 * 2);
 
-        if (option == 2) backBufferGraphics.setColor(pulseColor);
-        else backBufferGraphics.setColor(Color.WHITE);
-        drawCenteredRegularString(screen, playString, screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight());
+		if (option == 2) backBufferGraphics.setColor(pulseColor);
+		else backBufferGraphics.setColor(Color.WHITE);
+		drawCenteredRegularString(screen, playString, screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight());
 
-        if (option == 1) backBufferGraphics.setColor(pulseColor);
-        else backBufferGraphics.setColor(Color.WHITE);
-        drawCenteredRegularString(screen, levelsString, screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight() * 2);
+		if (option == 7) backBufferGraphics.setColor(pulseColor);
+		else backBufferGraphics.setColor(Color.WHITE);
+		drawCenteredRegularString(screen, levelsString, screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight() * 2);
 
         if (option == 3) backBufferGraphics.setColor(pulseColor);
         else backBufferGraphics.setColor(Color.WHITE);
