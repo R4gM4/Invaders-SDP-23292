@@ -482,6 +482,7 @@ public class GameScreen extends Screen {
 	 */
 	private void draw() {
 		drawManager.initDrawing(this);
+        drawManager.drawBackground(this);
 
 		if (this.livesP1 > 0) {
 			drawManager.drawEntity(this.ship, this.ship.getPositionX(),

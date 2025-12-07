@@ -18,10 +18,13 @@ import entity.Ship;
 import engine.Achievement;
 import screen.CreditScreen;
 import screen.Screen;
+import screen.GameScreen;
 import engine.Score;
 import screen.TitleScreen;
 import screen.TitleScreen.Star;
 import screen.TitleScreen.ShootingStar;
+import java.awt.Graphics2D;
+import java.awt.GradientPaint;
 
 /**
  * Manages screen drawing.
@@ -60,6 +63,18 @@ public final class DrawManager {
 
 	/** Sprite types mapped to their images. */
 	private static Map<SpriteType, boolean[][]> spriteMap;
+
+	/**
+	 * Palette profile (saturation/brightness pairs) used for procedural gradients.
+	 */
+	private static final float[][] GRADIENT_PROFILE = new float[][] {
+			{ 0.65f, 0.9f },
+			{ 0.75f, 0.85f },
+			{ 0.85f, 0.8f },
+			{ 0.7f, 0.95f },
+			{ 0.9f, 0.9f },
+			{ 0.8f, 0.88f }
+	};
 
 	/** Sprite types. */
 	public static enum SpriteType {
@@ -711,6 +726,20 @@ public final class DrawManager {
 	}
 
 	/**
+	 * Creates a vivid gradient pair for the given level using HSB colors to guarantee contrast.
+	 */
+	private static Color[] buildGradientForLevel(int level) {
+		int index = Math.max(0, level);
+		float hue = (index % 12) / 12f;
+		float hueShift = 0.08f;
+		float[] profile = GRADIENT_PROFILE[index % GRADIENT_PROFILE.length];
+
+		Color top = Color.getHSBColor(hue, profile[0], profile[1]);
+		Color bottom = Color.getHSBColor((hue + hueShift) % 1f, 0.95f, 0.18f);
+		return new Color[] { top, bottom };
+	}
+
+	/**
 	 * Draws the starfield background.
 	 * 
 	 * @param screen
@@ -772,7 +801,36 @@ public final class DrawManager {
 		backBufferGraphics.setFont(oldFont);
 	}
 
+    private GameScreen gameScreen;
 
+    public void drawBackground(Screen screen) {
+        if (backBufferGraphics == null) {
+            return;
+        }
 
-	public void drawShootingStars(final Screen screen, final List<ShootingStar> shootingStars, final float angle) {    }
+        GameScreen activeGameScreen = null;
+        if (screen instanceof GameScreen) {
+            this.gameScreen = (GameScreen) screen;
+            activeGameScreen = this.gameScreen;
+        } else if (this.gameScreen != null) {
+            activeGameScreen = this.gameScreen;
+        }
+
+        Graphics2D g2d = (Graphics2D) backBufferGraphics;
+
+        if (activeGameScreen != null && activeGameScreen.getGameState() != null) {
+            int level = Math.max(0, activeGameScreen.getGameState().getLevel() - 1);
+            Color[] palette = buildGradientForLevel(level);
+            GradientPaint gradient = new GradientPaint(
+                    0, 0, palette[0],
+                    0, screen.getHeight(),
+                    palette[1]
+            );
+            g2d.setPaint(gradient);
+            g2d.fillRect(0, 0, screen.getWidth(), screen.getHeight());
+        } else {
+            g2d.setColor(Color.BLACK);
+            g2d.fillRect(0, 0, screen.getWidth(), screen.getHeight());
+        }
+    }
 }
