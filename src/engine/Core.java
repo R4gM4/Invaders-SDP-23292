@@ -174,7 +174,7 @@ public final class Core {
 						if (exitEarly) {
 							break;
 						}
-                        if (gameState.getLivesRemaining() > 0 || (TitleScreen.getNumberOfPlayers() == 2 && gameState.getLivesRemainingP2() > 0) {
+                        if (gameState.getLivesRemaining() > 0 || (TitleScreen.getNumberOfPlayers() == 2 && gameState.getLivesRemainingP2() > 0)) {
 							SoundManager.stopAll();
 							SoundManager.play("sfx/levelup.wav");
 
