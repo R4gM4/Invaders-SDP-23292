@@ -1,3 +1,7 @@
+package tests;
+
+import java.util.Arrays;
+
 public class GameScreenPauseMenuTest {
 
     @org.junit.jupiter.api.BeforeEach
@@ -9,9 +13,7 @@ public class GameScreenPauseMenuTest {
         if (keys == null) {
             return;
         }
-        for (int i = 0; i < keys.length; i++) {
-            keys[i] = false;
-        }
+        Arrays.fill(keys, false);
     }
 
     @org.junit.jupiter.api.Test
@@ -46,13 +48,13 @@ public class GameScreenPauseMenuTest {
     @org.junit.jupiter.api.Test
     void handlePauseMenuInputMovesSelectionWithArrowKeys() throws Exception {
         screen.GameScreen gameScreen = createPauseReadyGameScreen();
-        setIntField(gameScreen, "pauseSelection", 0);
+        setIntField(gameScreen, 0);
         resetCooldown((engine.Cooldown) getField(gameScreen, "pauseInputCooldown"));
         setKeyState(java.awt.event.KeyEvent.VK_DOWN, true);
 
         invokePrivate(gameScreen, "handlePauseMenuInput");
 
-        org.junit.jupiter.api.Assertions.assertEquals(1, getIntField(gameScreen, "pauseSelection"));
+        org.junit.jupiter.api.Assertions.assertEquals(1, getIntField(gameScreen));
 
         setKeyState(java.awt.event.KeyEvent.VK_DOWN, false);
         resetCooldown((engine.Cooldown) getField(gameScreen, "pauseInputCooldown"));
@@ -60,7 +62,7 @@ public class GameScreenPauseMenuTest {
 
         invokePrivate(gameScreen, "handlePauseMenuInput");
 
-        org.junit.jupiter.api.Assertions.assertEquals(0, getIntField(gameScreen, "pauseSelection"));
+        org.junit.jupiter.api.Assertions.assertEquals(0, getIntField(gameScreen));
     }
 
     @org.junit.jupiter.api.Test
@@ -83,27 +85,27 @@ public class GameScreenPauseMenuTest {
     @org.junit.jupiter.api.Test
     void pauseMenuRestartSetsExitActionAndStopsScreen() throws Exception {
         screen.GameScreen gameScreen = createPauseReadyGameScreen();
-        setIntField(gameScreen, "pauseSelection", 1);
+        setIntField(gameScreen, 1);
         setKeyState(java.awt.event.KeyEvent.VK_ENTER, true);
 
         invokePrivate(gameScreen, "handlePauseMenuInput");
 
         org.junit.jupiter.api.Assertions.assertEquals(screen.GameScreen.ExitAction.RESTART,
                 getField(gameScreen, "exitAction"));
-        org.junit.jupiter.api.Assertions.assertFalse(getBooleanFieldFromScreen(gameScreen, "isRunning"));
+        org.junit.jupiter.api.Assertions.assertFalse(getBooleanFieldFromScreen(gameScreen));
     }
 
     @org.junit.jupiter.api.Test
     void pauseMenuReturnToMenuSetsExitActionAndStopsScreen() throws Exception {
         screen.GameScreen gameScreen = createPauseReadyGameScreen();
-        setIntField(gameScreen, "pauseSelection", 2);
+        setIntField(gameScreen, 2);
         setKeyState(java.awt.event.KeyEvent.VK_ENTER, true);
 
         invokePrivate(gameScreen, "handlePauseMenuInput");
 
         org.junit.jupiter.api.Assertions.assertEquals(screen.GameScreen.ExitAction.MENU,
                 getField(gameScreen, "exitAction"));
-        org.junit.jupiter.api.Assertions.assertFalse(getBooleanFieldFromScreen(gameScreen, "isRunning"));
+        org.junit.jupiter.api.Assertions.assertFalse(getBooleanFieldFromScreen(gameScreen));
     }
 
     private screen.GameScreen createPauseReadyGameScreen() throws Exception {
@@ -123,7 +125,7 @@ public class GameScreenPauseMenuTest {
         engine.GameTimer timer = new engine.GameTimer();
         setField(gameScreen, "gameTimer", timer);
         setBooleanField(gameScreen, "paused", false);
-        setIntField(gameScreen, "pauseSelection", 0);
+        setIntField(gameScreen, 0);
         setBooleanField(gameScreen, "isRunning", true);
 
         return gameScreen;
@@ -162,8 +164,8 @@ public class GameScreenPauseMenuTest {
         return field.get(target);
     }
 
-    private int getIntField(Object target, String fieldName) throws Exception {
-        java.lang.reflect.Field field = findField(target.getClass(), fieldName);
+    private int getIntField(Object target) throws Exception {
+        java.lang.reflect.Field field = findField(target.getClass(), "pauseSelection");
         field.setAccessible(true);
         return field.getInt(target);
     }
@@ -174,8 +176,8 @@ public class GameScreenPauseMenuTest {
         return field.getBoolean(target);
     }
 
-    private boolean getBooleanFieldFromScreen(Object target, String fieldName) throws Exception {
-        return getBooleanField(target, fieldName);
+    private boolean getBooleanFieldFromScreen(Object target) throws Exception {
+        return getBooleanField(target, "isRunning");
     }
 
     private void setField(Object target, String fieldName, Object value) throws Exception {
@@ -190,8 +192,8 @@ public class GameScreenPauseMenuTest {
         field.setBoolean(target, value);
     }
 
-    private void setIntField(Object target, String fieldName, int value) throws Exception {
-        java.lang.reflect.Field field = findField(target.getClass(), fieldName);
+    private void setIntField(Object target, int value) throws Exception {
+        java.lang.reflect.Field field = findField(target.getClass(), "pauseSelection");
         field.setAccessible(true);
         field.setInt(target, value);
     }

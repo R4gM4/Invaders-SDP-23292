@@ -2,24 +2,13 @@ package engine;
 
 import audio.SoundManager;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import entity.ShopItem;
-import screen.GameScreen;
-import screen.HighScoreScreen;
-import screen.ScoreScreen;
-import screen.Screen;
-import screen.ShopScreen;
-import screen.TitleScreen;
-import screen.AchievementScreen;
 import engine.level.LevelManager;
-import screen.ShopScreen;
 import screen.*;
 
 /**

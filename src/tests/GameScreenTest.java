@@ -1,7 +1,8 @@
+package tests;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import screen.GameScreen;
-import screen.TitleScreen;
 import engine.GameState;
 import engine.level.Level;
 import engine.level.LevelManager;
@@ -15,7 +16,6 @@ class GameScreenTest {
 
     private GameState gameState;
     private Level testLevel;
-    private LevelManager levelManager;
 
     @BeforeEach
     void setUp() {
@@ -23,7 +23,7 @@ class GameScreenTest {
         gameState = new GameState(1, 0, 3, 3, 0, 0, 100);
         
         // Initialize level manager and get a test level
-        levelManager = new LevelManager();
+        LevelManager levelManager = new LevelManager();
         testLevel = levelManager.getLevel(1);
     }
 
