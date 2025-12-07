@@ -35,11 +35,12 @@ public class LevelsScreen extends Screen {
     @Override
     public int run() {
         super.run();
-        return 2;
+        return this.returnCode;
     }
 
     private void startLevel(int index) {
         gameState.setLevel(index + 1);
+        this.returnCode = 2;
         this.isRunning = false;
     }
 

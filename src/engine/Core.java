@@ -99,8 +99,6 @@ public final class Core {
 
         int returnCode = 1;
 		do {
-            boolean[] previousUnlocked = gameState.getUnlockedLevels();
-
             gameState = new GameState(
                     gameState.getLevel(),
                     0,
@@ -198,8 +196,7 @@ public final class Core {
 					SoundManager.stopAll();
 					SoundManager.play("sfx/gameover.wav");
 
-                    boolean[] savedUnlockedLevels = gameState.getUnlockedLevels().clone();
-
+                    savedUnlockedLevels = gameState.getUnlockedLevels();
                     LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
                             + " score screen at " + FPS + " fps, with a score of "
                             + gameState.getScore() + ", "
