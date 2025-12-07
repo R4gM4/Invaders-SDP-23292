@@ -31,6 +31,11 @@ public final class Core {
 	/** Levels between extra life. */
 	private static final int EXTRA_LIFE_FRECUENCY = 3;
 
+    /** Saved unlocked levels to persist across screens. */
+    private static boolean[] savedUnlockedLevels = new boolean[7];
+    static {
+        savedUnlockedLevels[0] = true;
+    }
 	/** Frame to draw the screen on. */
 	private static Frame frame;
 	/** Screen currently shown. */
@@ -84,7 +89,7 @@ public final class Core {
         int returnCode = 1;
 		do {
             int p2Lives = (TitleScreen.getNumberOfPlayers() == 2) ? MAX_LIVES : 0;
-            gameState = new GameState(1, 0, MAX_LIVES, p2Lives, 0, 0,gameState.getCoin());
+            gameState = new GameState(1, 0, MAX_LIVES, p2Lives, 0, 0,gameState.getCoin(), savedUnlockedLevels);
             switch (returnCode) {
                 case 1:
                     // Main menu.
@@ -128,7 +133,8 @@ public final class Core {
                                 gameState.getLivesRemainingP2(),
                                 gameState.getBulletsShot(),
                                 gameState.getShipsDestroyed(),
-                                gameState.getCoin()
+                                gameState.getCoin(),
+                                savedUnlockedLevels
                         );
 
                         // Start a new level
@@ -167,6 +173,10 @@ public final class Core {
 							SoundManager.stopAll();
 							SoundManager.play("sfx/levelup.wav");
 
+                            gameState.unlockNextLevel();
+
+                            savedUnlockedLevels = gameState.getUnlockedLevels();
+
 							LOGGER.info("Opening shop screen with "
                                     + gameState.getCoin() + " coins.");
 
@@ -184,8 +194,11 @@ public final class Core {
 									nextP2Lives,   // Keep remaining livesP2
                                     gameState.getBulletsShot(),        // Keep bullets fired
                                     gameState.getShipsDestroyed(),     // Keep ships destroyed
-                                    gameState.getCoin()                // Keep current coins
+                                    gameState.getCoin(),               // Keep current coins
+                                    savedUnlockedLevels
                             );
+
+                            gameState.unlockLevel(gameState.getLevel() - 1); // -1 because 0-based
                         }
                         // Loop while player still has lives and levels remaining
                     } while (gameState.getLivesRemaining() > 0 || (TitleScreen.getNumberOfPlayers() == 2 && gameState.getLivesRemainingP2() > 0));
@@ -195,6 +208,7 @@ public final class Core {
 					SoundManager.stopAll();
 					SoundManager.play("sfx/gameover.wav");
 
+                    savedUnlockedLevels = gameState.getUnlockedLevels();
                     LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
                             + " score screen at " + FPS + " fps, with a score of "
                             + gameState.getScore() + ", "
@@ -205,6 +219,18 @@ public final class Core {
                     currentScreen = new ScoreScreen(width, height, FPS, gameState);
                     returnCode = frame.setScreen(currentScreen);
                     LOGGER.info("Closing score screen.");
+
+                    gameState = new GameState(
+                            1,
+                            0,
+                            MAX_LIVES,
+                            MAX_LIVES,
+                            0,
+                            0,
+                            gameState.getCoin(),
+                            savedUnlockedLevels
+                    );
+
                     break;
                 case 3:
                     // High scores
@@ -224,13 +250,22 @@ public final class Core {
                     break;
                 case 6:
                     // Achievements
-                    currentScreen = new  AchievementScreen(width, height, FPS);
+                    currentScreen = new AchievementScreen(width, height, FPS);
                     LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
                             + " achievement screen at " + FPS + " fps.");
                     returnCode = frame.setScreen(currentScreen);
                     LOGGER.info("Closing achievement screen.");
                     break;
-				case 8: // (추가) CreditScreen
+                case 7:
+                    // Levels screen
+                    currentScreen = new LevelsScreen(gameState, width, height, FPS);
+                    LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
+                            + " levels screen at " + FPS + " fps.");
+                    returnCode = frame.setScreen(currentScreen);
+                    LOGGER.info("Closing levels screen.");
+                    break;
+
+                case 8: // (추가) CreditScreen
 					currentScreen = new CreditScreen(width, height, FPS);
 					LOGGER.info("Starting " + currentScreen.getClass().getSimpleName() + " screen.");
 					returnCode = frame.setScreen(currentScreen);
@@ -290,7 +325,7 @@ public final class Core {
 	}
 
 	/**
-	 * Controls creation of new cooldowns.
+	 * Controls creation of new cooldowns.cd
 	 * 
 	 * @param milliseconds
 	 *            Duration of the cooldown.

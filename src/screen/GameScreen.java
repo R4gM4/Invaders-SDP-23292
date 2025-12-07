@@ -987,7 +987,7 @@ public class GameScreen extends Screen {
 	            AchievementManager.getInstance().unlockAchievement("Mr. Greedy");
 	        }
 	        return new GameState(this.level, this.score, this.livesP1,this.livesP2,
-	                this.bulletsShot, this.shipsDestroyed,this.coin);
+	                this.bulletsShot, this.shipsDestroyed,this.coin,this.gameState.getUnlockedLevels());
 	    }
 
 	public ExitAction getExitAction() {
