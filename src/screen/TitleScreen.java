@@ -355,8 +355,6 @@ public class TitleScreen extends Screen {
 		// Draw stars with rotation
 		drawManager.drawStars(this, this.stars, this.currentAngle);
 
-		// Draw shooting stars with rotation
-        drawManager.drawShootingStars(this, this.shootingStars, this.currentAngle);
 
 		// Draw background enemies with rotation
 		final double angleRad = Math.toRadians(this.currentAngle);
