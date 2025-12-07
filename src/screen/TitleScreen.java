@@ -112,6 +112,9 @@ public class TitleScreen extends Screen {
 
     private boolean musicStarted = false;
 
+	/** Number of players selected (1 or 2). */
+	private static int numberOfPlayers = 1;
+
 	/** Current rotation angle of the starfield. */
     private float currentAngle;
     /** Target rotation angle of the starfield. */
@@ -133,8 +136,8 @@ public class TitleScreen extends Screen {
 	public TitleScreen(final int width, final int height, final int fps) {
 		super(width, height, fps);
 
-		// Defaults to play.
-		this.returnCode = 2;
+		// Defaults to player selection.
+		this.returnCode = 7;
 		this.soundButton = new SoundButton(0, 0);
 		this.selectionCooldown = Core.getCooldown(SELECTION_TIME);
 		this.enemySpawnCooldown = Core.getCooldown(ENEMY_SPAWN_COOLDOWN);
@@ -260,7 +263,10 @@ public class TitleScreen extends Screen {
 				this.selectionCooldown.reset();
 			}
 			if (inputManager.isKeyDown(KeyEvent.VK_SPACE)){
-				if (this.returnCode != 5) {
+				if (this.returnCode == 7) {
+					numberOfPlayers = (numberOfPlayers == 1) ? 2 : 1;
+					this.selectionCooldown.reset();
+				} else if (this.returnCode != 5) {
 					this.isRunning = false;
 				} else {
 					this.soundButton.changeSoundState();
@@ -299,7 +305,9 @@ public class TitleScreen extends Screen {
 	 */
 	private void nextMenuItem() {
 		SoundManager.play("sfx/menu_select.wav");
-		if (this.returnCode == 2)
+		if (this.returnCode == 7)
+			this.returnCode = 2;
+		else if (this.returnCode == 2)
 			this.returnCode = 3;
 		else if (this.returnCode == 3)
 			this.returnCode = 6;
@@ -308,7 +316,7 @@ public class TitleScreen extends Screen {
 		else if (this.returnCode == 4)
 			this.returnCode = 0;
 		else if (this.returnCode == 0)
-			this.returnCode = 2;
+			this.returnCode = 7;
 		else if (this.returnCode == 5) {
 			this.returnCode = 0;
 		}
@@ -320,8 +328,10 @@ public class TitleScreen extends Screen {
 	 */
 	private void previousMenuItem() {
 		SoundManager.play("sfx/menu_select.wav");
-		if (this.returnCode == 2)
+		if (this.returnCode == 7)
 			this.returnCode = 0;
+		else if (this.returnCode == 2)
+			this.returnCode = 7;
 		else if (this.returnCode == 0)
 			this.returnCode = 4;
 		else if (this.returnCode == 4)
@@ -382,5 +392,13 @@ public class TitleScreen extends Screen {
 	 */
 	public boolean getIsSoundOn() {
 		return SoundButton.getIsSoundOn();
+	}
+
+	/**
+	 * Getter for the number of players.
+	 * @return Number of players selected (1 or 2).
+	 */
+	public static int getNumberOfPlayers() {
+		return numberOfPlayers;
 	}
 }

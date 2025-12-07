@@ -174,7 +174,9 @@ public class GameScreen extends Screen {
 		        this.gameState = gameState;
 				if (this.bonusLife) {
 					this.livesP1++;
-					this.livesP2++;
+					if (TitleScreen.getNumberOfPlayers() == 2) {
+						this.livesP2++;
+					}
 				}
 		this.bulletsShot = gameState.getBulletsShot();
 		this.shipsDestroyed = gameState.getShipsDestroyed();
@@ -190,11 +192,17 @@ public class GameScreen extends Screen {
         enemyShipFormation = new EnemyShipFormation(this.currentLevel);
 		enemyShipFormation.attach(this);
         this.enemyShipFormation.applyEnemyColorByLevel(this.currentLevel);
-		this.ship = new Ship(this.width / 2 - 100, ITEMS_SEPARATION_LINE_HEIGHT - 20,Color.green);
-		    this.ship.setPlayerId(1);   //=== [ADD] Player 1 ===
-
-        this.shipP2 = new Ship(this.width / 2 + 100, ITEMS_SEPARATION_LINE_HEIGHT - 20,Color.pink);
-        this.shipP2.setPlayerId(2); // === [ADD] Player2 ===
+		
+		if (TitleScreen.getNumberOfPlayers() == 1) {
+			this.ship = new Ship(this.width / 2, ITEMS_SEPARATION_LINE_HEIGHT - 20,Color.green);
+			this.ship.setPlayerId(1);
+			this.shipP2 = null;
+		} else {
+			this.ship = new Ship(this.width / 2 - 100, ITEMS_SEPARATION_LINE_HEIGHT - 20,Color.green);
+			this.ship.setPlayerId(1);
+			this.shipP2 = new Ship(this.width / 2 + 100, ITEMS_SEPARATION_LINE_HEIGHT - 20,Color.pink);
+			this.shipP2.setPlayerId(2);
+		}
         // special enemy initial
 		enemyShipSpecialFormation = new EnemyShipSpecialFormation(this.currentLevel,
 				Core.getVariableCooldown(BONUS_SHIP_INTERVAL, BONUS_SHIP_VARIANCE),
@@ -228,7 +236,9 @@ public class GameScreen extends Screen {
 		super.run();
 
 		this.score += LIFE_SCORE * (this.livesP1 - 1);
-		this.score += LIFE_SCORE * (this.livesP2 - 1);
+		if (TitleScreen.getNumberOfPlayers() == 2) {
+			this.score += LIFE_SCORE * (this.livesP2 - 1);
+		}
 		this.logger.info("Screen cleared with a score of " + this.score);
 
 		return this.returnCode;
@@ -432,10 +442,14 @@ public class GameScreen extends Screen {
 
 		// Interface.
         drawManager.drawScore(this, this.scoreP1);   // Top line still displays P1
-        drawManager.drawScoreP2(this, this.scoreP2); // Added second line for P2
+        if (TitleScreen.getNumberOfPlayers() == 2) {
+            drawManager.drawScoreP2(this, this.scoreP2); // Added second line for P2
+        }
         drawManager.drawCoin(this,this.coin);
 		drawManager.drawLives(this, this.livesP1);
-		drawManager.drawLivesP2(this, this.livesP2);
+		if (TitleScreen.getNumberOfPlayers() == 2) {
+			drawManager.drawLivesP2(this, this.livesP2);
+		}
 		drawManager.drawTime(this, this.elapsedTime);
 		drawManager.drawItemsHUD(this);
 		drawManager.drawLevel(this, this.currentLevel.getLevelName());
