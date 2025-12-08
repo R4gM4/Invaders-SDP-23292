@@ -81,8 +81,7 @@ public class FinalBoss extends Entity implements BossEntity{
     @Override
     public void takeDamage(int damage){
         this.healPoint -= damage;
-        SoundManager.stop("sfx/pikachu.wav");
-        SoundManager.play("sfx/pikachu.wav");
+        SoundManager.play("sfx/impact.wav");
         if(this.healPoint <= 0){
             this.destroy();
         }

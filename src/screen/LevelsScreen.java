@@ -13,13 +13,13 @@ public class LevelsScreen extends Screen {
 
     private static final int SELECTION_TIME = 200;
 
-    private Cooldown selectionCooldown;
-    private GameState gameState;
+    private final Cooldown selectionCooldown;
+    private final GameState gameState;
 
     private int selectedLevelIndex;
 
     // available levels
-    private String[] levels = {
+    private final String[] levels = {
             "Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6", "Level 7"
     };
 

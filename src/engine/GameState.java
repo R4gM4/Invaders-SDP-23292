@@ -11,19 +11,19 @@ public class GameState {
 	/** Current game level. */
 	private int level;
 	/** Current score. */
-	private int score;
+	private final int score;
 	/** Lives currently remaining. */
-	private int livesRemaining;
-	private int livesRemainingP2;
+	private final int livesRemaining;
+	private final int livesRemainingP2;
 	/** Bullets shot until now. */
-	private int bulletsShot;
+	private final int bulletsShot;
 	/** Ships destroyed until now. */
-	private int shipsDestroyed;
+	private final int shipsDestroyed;
     /** Current coin. */
     private int coin;
 
     /** Which levels are unlocked */
-    private boolean[] unlockedLevels;
+    private final boolean[] unlockedLevels;
 
 
 	/**

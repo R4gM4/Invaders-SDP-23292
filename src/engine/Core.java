@@ -82,14 +82,12 @@ public final class Core {
 		int height = frame.getHeight();
 
 		levelManager = new LevelManager();
-		GameState gameState = new GameState(1, 0, MAX_LIVES, MAX_LIVES, 0, 0,0);
-		boolean preserveGameState = false;
-
+		GameState gameState = new GameState(1, 0, MAX_LIVES, MAX_LIVES, 0, 0,0, savedUnlockedLevels);
 
         int returnCode = 1;
 		do {
             int p2Lives = (TitleScreen.getNumberOfPlayers() == 2) ? MAX_LIVES : 0;
-            gameState = new GameState(1, 0, MAX_LIVES, p2Lives, 0, 0,gameState.getCoin(), savedUnlockedLevels);
+            gameState = new GameState(gameState.getLevel(), 0, MAX_LIVES, p2Lives, 0, 0,gameState.getCoin(), savedUnlockedLevels);
             switch (returnCode) {
                 case 1:
                     // Main menu.
@@ -159,7 +157,6 @@ public final class Core {
                         if (exitAction == GameScreen.ExitAction.RESTART) {
                             // Restart same level with the same parameters as when it began.
                             gameState = levelStartState;
-                            preserveGameState = true;
                             exitEarly = true;
                         } else if (exitAction == GameScreen.ExitAction.MENU) {
                             returnCode = 1;
